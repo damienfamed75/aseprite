@@ -1,0 +1,2 @@
+# aseprite
+Aseprite JSON loader
