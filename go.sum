@@ -1,0 +1,10 @@
+github.com/damienfamed75/goaseprite v0.0.0-20180826090229-a959a0424110 h1:AP6bV4tZr+aZBqPsWyvFRFEsWBQOVB3po5mmyJrB4SA=
+github.com/damienfamed75/goaseprite v0.0.0-20180826090229-a959a0424110/go.mod h1:CP99ruw6qfJTf1Mv5Ry5SMhjU+LNCfHOuNHvKXp6JfA=
+github.com/solarlune/goaseprite v0.0.0-20190529165257-8ddb57cec83c h1:QKrQanT0kquMC1baE74bszfoczbrw8ESjS8opz/ejYc=
+github.com/solarlune/goaseprite v0.0.0-20190529165257-8ddb57cec83c/go.mod h1:8SdRk5PVBiAxXwaQrI2Fv2HHhN2637F5t1VpKyELRGw=
+github.com/tidwall/gjson v1.3.2 h1:+7p3qQFaH3fOMXAJSrdZwGKcOO/lYdGS0HqGhPqDdTI=
+github.com/tidwall/gjson v1.3.2/go.mod h1:P256ACg0Mn+j1RXIDXoss50DeIABTYK1PULOJHhxOls=
+github.com/tidwall/match v1.0.1 h1:PnKP62LPNxHKTwvHHZZzdOAOCtsJTjo6dZLCwpKm5xc=
+github.com/tidwall/match v1.0.1/go.mod h1:LujAq0jyVjBy028G1WhWfIzbpQfMO8bBZ6Tyb0+pL9E=
+github.com/tidwall/pretty v1.0.0 h1:HsD+QiTn7sK6flMKIvNmpqz1qrpP3Ps6jOKIKMooyg4=
+github.com/tidwall/pretty v1.0.0/go.mod h1:XNkn88O1ChpSDQmQeStsy+sBenx6DDtFZJxhVysOjyk=
