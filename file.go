@@ -8,8 +8,8 @@ import (
 // This includes helpful methods to interact and get information about
 // the animations and its frames.
 type File struct {
-	FrameData `json:"frames"`
-	MetaData  `json:"meta"`
+	Frames FrameData `json:"frames"`
+	Meta   MetaData  `json:"meta"`
 	AnimationInfo
 }
 
@@ -29,16 +29,12 @@ func NewFile(data []byte) (*File, error) {
 // Play will mark an animation in the list of animations listed in the aseprite
 // file to be used for the Update method.
 func (f *File) Play(animation string) error {
-	if f.CurrentAnimation == nil {
-		f.playAnimation(f.Animation(animation))
-	}
-
 	anim := f.Animation(animation)
 	if anim == nil {
 		return errorAnimationNotFound.withParams(animation)
 	}
 
-	if *anim != *f.CurrentAnimation {
+	if f.CurrentAnimation == nil || *anim != *f.CurrentAnimation {
 		f.playAnimation(anim)
 	}
 
@@ -48,7 +44,7 @@ func (f *File) Play(animation string) error {
 // FrameBoundaries will return the current frame's bounding box.
 func (f *File) FrameBoundaries() Boundary {
 	if f.CurrentAnimation != nil {
-		return f.FrameAtIndex(f.CurrentFrame).FrameBoundaries
+		return f.Frames.FrameAtIndex(f.CurrentFrame).FrameBoundaries
 	}
 
 	return Boundary{}
@@ -61,7 +57,7 @@ func (f *File) FrameBoundaries() Boundary {
 // There are no generics in the language yet that would allow me to
 // prevent this code duplication.
 func (f *File) Animation(animation string) *Animation {
-	for _, anim := range f.Animations {
+	for _, anim := range f.Meta.Animations {
 		if anim.Name == animation {
 			return &anim
 		}
@@ -77,7 +73,7 @@ func (f *File) Animation(animation string) *Animation {
 // There are no generics in the language yet that would allow me to
 // prevent this code duplication.
 func (f *File) Slice(slice string) *Slice {
-	for _, s := range f.Slices {
+	for _, s := range f.Meta.Slices {
 		if s.Name == slice {
 			return &s
 		}
@@ -112,7 +108,7 @@ func (f *File) Update(dt float32) {
 
 		// If the frame counter is greater than the expected frame duration
 		// then increment or decrement the current frame being displayed.
-		if f.frameCounter > float32(f.FrameAtIndex(f.CurrentFrame).Duration) {
+		if f.frameCounter > float32(f.Frames.FrameAtIndex(f.CurrentFrame).Duration) {
 			f.advanceFrame()
 		}
 
