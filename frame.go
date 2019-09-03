@@ -17,7 +17,7 @@ type Frame struct {
 	Trimmed          bool        `json:"trimmmed"`
 	SpriteSourceSize Boundary    `json:"spriteSourceSize"`
 	SourceSize       WidthHeight `json:"sourceSize"`
-	Duration         int         `json:"duration"`
+	Duration         float32     `json:"duration"`
 }
 
 // LenFrames return the length of the number of frames in the aseprite file.
@@ -54,6 +54,7 @@ func (d *FrameData) UnmarshalJSON(data []byte) error {
 		d.IsMap = true
 		for k, f := range d.frameMap {
 			f.FileName = k
+			f.Duration = f.Duration / 1000
 			d.frameSlice = append(d.frameSlice, f)
 		}
 		return nil
@@ -65,6 +66,7 @@ func (d *FrameData) UnmarshalJSON(data []byte) error {
 
 	d.frameMap = make(map[string]Frame)
 	for _, f := range d.frameSlice {
+		f.Duration = f.Duration / 1000
 		d.frameMap[f.FileName] = f
 	}
 

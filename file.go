@@ -29,12 +29,16 @@ func NewFile(data []byte) (*File, error) {
 // Play will mark an animation in the list of animations listed in the aseprite
 // file to be used for the Update method.
 func (f *File) Play(animation string) error {
+	if f.CurrentAnimation == nil {
+		f.playAnimation(f.GetAnimation(animation))
+	}
+
 	anim := f.GetAnimation(animation)
 	if anim == nil {
 		return errorAnimationNotFound.withParams(animation)
 	}
 
-	if anim != f.CurrentAnimation {
+	if *anim != *f.CurrentAnimation {
 		f.playAnimation(anim)
 	}
 
