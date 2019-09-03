@@ -95,7 +95,7 @@ func (f *File) Update(dt float32) {
 
 		// If the frame counter is greater than the expected frame duration
 		// then increment or decrement the current frame being displayed.
-		if f.frameCounter > f.Frames.FrameAt(f.CurrentFrame).Duration {
+		if f.frameCounter > f.Frames.FrameAtIndex(f.CurrentFrame).Duration {
 			f.advanceFrame()
 		}
 
