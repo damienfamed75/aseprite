@@ -3,6 +3,8 @@ module github.com/damienfamed75/aseprite
 go 1.12
 
 require (
+	github.com/EngoEngine/ecs v1.0.3
+	github.com/EngoEngine/engo v1.0.4
 	github.com/damienfamed75/goaseprite v0.0.0-20180826090229-a959a0424110 // indirect
 	github.com/faiface/glhf v0.0.0-20181018222622-82a6317ac380 // indirect
 	github.com/faiface/mainthread v0.0.0-20171120011319-8b78f0a41ae3 // indirect
