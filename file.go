@@ -2,6 +2,8 @@ package aseprite
 
 import (
 	"encoding/json"
+	"io/ioutil"
+	"os"
 )
 
 // File is the final parsed aseprite file.
@@ -11,6 +13,24 @@ type File struct {
 	Frames FrameData `json:"frames"`
 	Meta   MetaData  `json:"meta"`
 	AnimationInfo
+}
+
+// Open will remove some of the pain of reading the data from the aseprite
+// JSON file and loading it into memory then giving it over here to turn into
+// a file. Instead this will open the filepath and then read the bytes and return
+// an aseprite File.
+func Open(filePath string) (*File, error) {
+	f, err := os.Open(filePath)
+	if err != nil {
+		return nil, err
+	}
+
+	bytes, err := ioutil.ReadAll(f)
+	if err != nil {
+		return nil, err
+	}
+
+	return NewFile(bytes)
 }
 
 // NewFile takes the file's data and unmarshals it into a new File.
