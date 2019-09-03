@@ -61,11 +61,13 @@ func run() {
 	for !win.Closed() {
 		// Calculate delta time. I'm sure there's a better option on how to
 		// create this, because everytime I run this the animation stutters.
-		dt := float32(time.Since(last).Milliseconds()) / 100
+		dt := float32(time.Since(last).Seconds() / 2)
 		last = time.Now()
 
 		ase.Update(dt)
 		bounds := ase.FrameBoundaries().Rectangle()
+
+		imd.Clear()
 
 		sprite.Set(pic, pixel.R(
 			float64(bounds.Min.X), float64(bounds.Min.Y),
