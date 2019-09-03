@@ -17,15 +17,9 @@ type Boundary struct {
 }
 
 // Rectangle returns a basic rectangle of the belonging coordinates.
-func (b *Boundary) Rectangle() *image.Rectangle {
-	return &image.Rectangle{
-		Min: image.Point{
-			X: b.X,
-			Y: b.Y,
-		},
-		Max: image.Point{
-			X: b.X + b.Width,
-			Y: b.Y + b.Height,
-		},
-	}
+func (b Boundary) Rectangle() image.Rectangle {
+	return image.Rect(
+		b.X, b.Y,
+		b.X+b.Width, b.Y+b.Height,
+	)
 }
