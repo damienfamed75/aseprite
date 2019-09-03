@@ -20,8 +20,7 @@ const (
 )
 
 var (
-	old time.Time
-	new = time.Now()
+	last = time.Now()
 
 	player      *ebiten.Image
 	playerSheet *aseprite.File
@@ -44,15 +43,14 @@ func main() {
 func update(screen *ebiten.Image) error {
 	// Keep track of the delta time however you wish.
 	// This is how I'm doing it for the example. It may not be the best solution.
-	old = new
-	new = time.Now()
+	dt := float32(time.Since(last).Milliseconds()) / 1000
+	last = time.Now()
 
 	if ebiten.IsDrawingSkipped() {
 		return nil
 	}
 
 	// Calculate delta time.
-	dt := (float32(new.Sub(old).Milliseconds()) / 1000) / 2
 	// Get the current frame's bounding box.
 	bounds := playerSheet.FrameBoundaries()
 	// Update the spritesheet.
