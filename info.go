@@ -14,7 +14,13 @@ type AnimationInfo struct {
 	PrevFrame        int
 	PrevCurrentFrame int // what?
 	CurrentFrame     int
-	frameCounter     int
+	frameCounter     float32
+}
+
+func setupAnimationInfo() AnimationInfo {
+	return AnimationInfo{
+		PlaySpeed: 1.0,
+	}
 }
 
 // IsPlaying returns a boolean if the provided animation is currently being

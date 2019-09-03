@@ -1,6 +1,8 @@
 package aseprite
 
-import "encoding/json"
+import (
+	"encoding/json"
+)
 
 // File is the final parsed aseprite file.
 // This includes helpful methods to interact and get information about
@@ -14,7 +16,9 @@ type File struct {
 // NewFile takes the file's data and unmarshals it into a new File.
 // What's the point in using this? Maybe saving an extra import?
 // I'm not really sure at this point.
-func (f *File) NewFile(data []byte) (*File, error) {
+func NewFile(data []byte) (*File, error) {
+	f := &File{AnimationInfo: setupAnimationInfo()}
+
 	if err := json.Unmarshal(data, &f); err != nil {
 		return nil, err
 	}
@@ -35,6 +39,15 @@ func (f *File) Play(animation string) error {
 	}
 
 	return nil
+}
+
+// GetFrameBoundaries will return the current frame's bounding box.
+func (f *File) GetFrameBoundaries() Boundary {
+	if f.CurrentAnimation != nil {
+		return f.Frames.FrameAtIndex(f.CurrentFrame).FrameBoundaries
+	}
+
+	return Boundary{}
 }
 
 // GetAnimation will search the slices in the aseprite file
@@ -91,11 +104,11 @@ func (f *File) Update(dt float32) {
 	if f.CurrentAnimation != nil {
 		// Increment the frame counter based on delta time.
 		// Note: Truncate multiplication.
-		f.frameCounter += int(dt * f.PlaySpeed)
+		f.frameCounter += dt * f.PlaySpeed
 
 		// If the frame counter is greater than the expected frame duration
 		// then increment or decrement the current frame being displayed.
-		if f.frameCounter > f.Frames.FrameAtIndex(f.CurrentFrame).Duration {
+		if f.frameCounter > float32(f.Frames.FrameAtIndex(f.CurrentFrame).Duration) {
 			f.advanceFrame()
 		}
 
