@@ -1,9 +1,106 @@
 package aseprite
 
+import "encoding/json"
+
 // File is the final parsed aseprite file.
 // This includes helpful methods to interact and get information about
 // the animations and its frames.
 type File struct {
 	Frames FrameData `json:"frames"`
 	Meta   MetaData  `json:"meta"`
+	AnimationInfo
+}
+
+// NewFile takes the file's data and unmarshals it into a new File.
+// What's the point in using this? Maybe saving an extra import?
+// I'm not really sure at this point.
+func (f *File) NewFile(data []byte) (*File, error) {
+	if err := json.Unmarshal(data, &f); err != nil {
+		return nil, err
+	}
+
+	return f, nil
+}
+
+// Play will mark an animation in the list of animations listed in the aseprite
+// file to be used for the Update method.
+func (f *File) Play(animation string) error {
+	anim := f.GetAnimation(animation)
+	if anim == nil {
+		return errorAnimationNotFound.withParams(animation)
+	}
+
+	if anim != f.CurrentAnimation {
+		f.playAnimation(anim)
+	}
+
+	return nil
+}
+
+// GetAnimation will search the slices in the aseprite file
+// and return any animation that matches the name provided.
+// Note: GetAnimation is a duplicate of GetSlice is almost every way.
+// This is because of the limitations of Golang that I cannot address.
+// There are no generics in the language yet that would allow me to
+// prevent this code duplication.
+func (f *File) GetAnimation(animation string) *Animation {
+	for _, anim := range f.Meta.Animations {
+		if anim.Name == animation {
+			return &anim
+		}
+	}
+
+	return nil
+}
+
+// GetSlice will search the slices in the aseprite file
+// and return any slice that matches the name provided.
+// Note: GetSlice is a duplicate of GetAnimation is almost every way.
+// This is because of the limitations of Golang that I cannot address.
+// There are no generics in the language yet that would allow me to
+// prevent this code duplication.
+func (f *File) GetSlice(slice string) *Slice {
+	for _, s := range f.Meta.Slices {
+		if s.Name == slice {
+			return &s
+		}
+	}
+
+	return nil
+}
+
+// HasAnimation returns a boolean value that represents whether the provided
+// animation is contained in the aseprite file.
+func (f *File) HasAnimation(animation string) bool {
+	return f.GetAnimation(animation) != nil
+}
+
+// HasSlice returns a boolean value that represents whether the provided
+// slice is contained in the aseprite file.
+func (f *File) HasSlice(slice string) bool {
+	return f.GetSlice(slice) != nil
+}
+
+// Update is used for a Game Loop in such an OpenGL style workflow.
+// This can be helpful for tracking the frame of the animation.
+func (f *File) Update(dt float32) {
+	f.PrevFrame = f.PrevCurrentFrame
+	f.PrevCurrentFrame = f.CurrentFrame
+	f.animationFinished = false
+
+	if f.CurrentAnimation != nil {
+		// Increment the frame counter based on delta time.
+		// Note: Truncate multiplication.
+		f.frameCounter += int(dt * f.PlaySpeed)
+
+		// If the frame counter is greater than the expected frame duration
+		// then increment or decrement the current frame being displayed.
+		if f.frameCounter > f.Frames.FrameAt(f.CurrentFrame).Duration {
+			f.advanceFrame()
+		}
+
+		// update the values to make sure that the animations are being
+		// finished or ping ponged back and forth.
+		f.updateAnimationValues()
+	}
 }

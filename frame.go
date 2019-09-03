@@ -12,6 +12,10 @@ func (d *FrameData) Frames() map[string]Frame {
 	return d.frameMap
 }
 
+func (d *FrameData) FrameAt(index int) Frame {
+	return d.frameSlice[index]
+}
+
 type Frame struct {
 	FileName         string      `json:"filename,omitempty"`
 	FrameBoundaries  Boundary    `json:"frame"`
@@ -27,6 +31,7 @@ func (d *FrameData) UnmarshalJSON(data []byte) error {
 		d.IsMap = true
 		for k, f := range d.frameMap {
 			f.FileName = k
+			d.frameSlice = append(d.frameSlice, f)
 		}
 		return nil
 	}

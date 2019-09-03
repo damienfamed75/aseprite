@@ -22,5 +22,10 @@ func main() {
 	for k, f := range f.Frames.Frames() {
 		log.Printf("[%s:%v]\n", k, f.Duration)
 	}
+
+	// err := f.Play("NON")
+	// if err != nil {
+	// 	log.Println(err)
+	// }
 	// log.Println(f.Frames.FrameMap)
 }
