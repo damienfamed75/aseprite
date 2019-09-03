@@ -1,10 +1,10 @@
 package main
 
+// For the sake of brevity this example ignores error handling.
+
 import (
 	"image"
 	_ "image/png"
-	"io/ioutil"
-	"log"
 	"os"
 	"time"
 
@@ -15,11 +15,11 @@ import (
 const (
 	screenWidth  = 320
 	screenHeight = 240
+
+	renderScale = 4.0
 )
 
 var (
-	count int
-
 	old time.Time
 	new = time.Now()
 
@@ -28,45 +28,22 @@ var (
 )
 
 func main() {
-	playerImage, err := os.Open("player.png")
-	if err != nil {
-		log.Fatalln("player open:", err)
-	}
+	// Open player image in ebiten and load it into memory.
+	playerImage, _ := os.Open("player.png")
+	img, _, _ := image.Decode(playerImage)
+	player, _ = ebiten.NewImageFromImage(img, ebiten.FilterNearest)
 
-	img, _, err := image.Decode(playerImage)
-	if err != nil {
-		log.Fatalf("player decode: err[%v]\n", err)
-	}
+	// Open the player spritesheet's aseprite JSON file and play a default animation.
+	playerSheet, _ = aseprite.Open("player.json")
+	playerSheet.Play("right")
 
-	player, err = ebiten.NewImageFromImage(img, ebiten.FilterNearest)
-	if err != nil {
-		log.Fatalln("player ebiten new image:", err)
-	}
-
-	animSheet, err := os.Open("player.json")
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	bytes, err := ioutil.ReadAll(animSheet)
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	playerSheet, err = aseprite.NewFile(bytes)
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	playerSheet.Play("down")
-
-	if err := ebiten.Run(update, screenWidth, screenHeight, 2, "Demo"); err != nil {
-		log.Fatalln(err)
-	}
+	// Run the app with a game loop.
+	ebiten.Run(update, screenWidth, screenHeight, 2, "Demo")
 }
 
 func update(screen *ebiten.Image) error {
-	count++
+	// Keep track of the delta time however you wish.
+	// This is how I'm doing it for the example. It may not be the best solution.
 	old = new
 	new = time.Now()
 
@@ -74,15 +51,28 @@ func update(screen *ebiten.Image) error {
 		return nil
 	}
 
+	// Calculate delta time.
 	dt := (float32(new.Sub(old).Milliseconds()) / 1000) / 2
+	// Get the current frame's bounding box.
+	bounds := playerSheet.FrameBoundaries()
+	// Update the spritesheet.
 	playerSheet.Update(dt)
 
+	// Create options that will center the sub image.
 	op := &ebiten.DrawImageOptions{}
-	bounds := playerSheet.FrameBoundaries()
-	op.GeoM.Translate(-float64(bounds.Width)/2, -float64(bounds.Height)/2)
-	op.GeoM.Translate(screenWidth/2, screenHeight/2)
+	op.GeoM.Scale(renderScale, renderScale)
+	op.GeoM.Translate(
+		-float64(bounds.Width*renderScale)/2,
+		-float64(bounds.Height*renderScale)/2,
+	)
+	op.GeoM.Translate(
+		screenWidth/2,
+		screenHeight/2,
+	)
 
+	// Draw the player.
 	screen.DrawImage(
+		// Create a sub image with the bounding box's Rectangle.
 		player.SubImage(bounds.Rectangle()).(*ebiten.Image), op,
 	)
 
