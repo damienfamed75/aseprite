@@ -1,6 +1,10 @@
 package aseprite
 
-import "encoding/json"
+import (
+	"encoding/json"
+
+	"gitlab.com/c0b/go-ordered-json"
+)
 
 // FrameData contains all the frames in the animation and their data.
 type FrameData struct {
@@ -50,13 +54,31 @@ func (d *FrameData) FrameMap() map[string]Frame {
 // UnmarshalJSON handles the problem of different layouts in the JSON file.
 // Sometimes the file can be a map for the frames and sometimes it can be a slice.
 func (d *FrameData) UnmarshalJSON(data []byte) error {
-	if err := json.Unmarshal(data, &d.frameMap); err == nil {
+	o := ordered.NewOrderedMap()
+	if err := json.Unmarshal(data, &o); err == nil {
 		d.IsMap = true
-		for k, f := range d.frameMap {
-			f.FileName = k
+		iter := o.EntriesIter()
+		for {
+			pair, ok := iter()
+			if !ok {
+				break
+			}
+
+			var f Frame
+			bytes, err := json.Marshal(pair.Value)
+			if err != nil {
+				return err
+			}
+
+			if err := json.Unmarshal(bytes, &f); err != nil {
+				return err
+			}
+
+			f.FileName = pair.Key
 			f.Duration = f.Duration / 1000
 			d.frameSlice = append(d.frameSlice, f)
 		}
+
 		return nil
 	}
 
