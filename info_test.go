@@ -218,11 +218,8 @@ func TestUpdateAnimationValues(t *testing.T) {
 				a.CurrentFrame = to + 1
 				a.updateAnimationValues()
 
-				Convey("Then current frame should equal 'to'", func() {
-					So(a.CurrentFrame, ShouldEqual, to)
-				})
-				Convey("And the animation should finish", func() {
-					So(a.AnimationFinished(), ShouldBeFalse)
+				Convey("Then current frame should equal 'from'", func() {
+					So(a.CurrentFrame, ShouldEqual, from)
 				})
 			})
 		})
