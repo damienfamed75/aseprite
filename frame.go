@@ -55,28 +55,39 @@ func (d *FrameData) FrameMap() map[string]Frame {
 // Sometimes the file can be a map for the frames and sometimes it can be a slice.
 func (d *FrameData) UnmarshalJSON(data []byte) error {
 	o := ordered.NewOrderedMap()
+	// Unmarshal the JSON into an ordered map.
+	// If there wasn't an error while unmarshalling then process the map.
 	if err := json.Unmarshal(data, &o); err == nil {
+		d.frameMap = make(map[string]Frame)
 		d.IsMap = true
+
+		// Iterate through the map in incremental order.
 		iter := o.EntriesIter()
 		for {
+			// Grab the next pair of items.
 			pair, ok := iter()
-			if !ok {
+			if !ok { // If there wasn't another pair then break.
 				break
 			}
 
+			// Create a new Frame object to append.
 			var f Frame
+			// Marshal the interface{} into a JSON.
 			bytes, err := json.Marshal(pair.Value)
 			if err != nil {
 				return err
 			}
-
+			// Unmarshal the JSON into the Frame.
 			if err := json.Unmarshal(bytes, &f); err != nil {
 				return err
 			}
-
+			// Set the FileName of the Frame.
 			f.FileName = pair.Key
+			// Fix the duration to work correctly when playing back.
 			f.Duration = f.Duration / 1000
+			// Append the frame to the slice and map of frames.
 			d.frameSlice = append(d.frameSlice, f)
+			d.frameMap[pair.Key] = f
 		}
 
 		return nil
