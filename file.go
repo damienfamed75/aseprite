@@ -8,8 +8,8 @@ import (
 // This includes helpful methods to interact and get information about
 // the animations and its frames.
 type File struct {
-	Frames FrameData `json:"frames"`
-	Meta   MetaData  `json:"meta"`
+	FrameData `json:"frames"`
+	MetaData  `json:"meta"`
 	AnimationInfo
 }
 
@@ -30,10 +30,10 @@ func NewFile(data []byte) (*File, error) {
 // file to be used for the Update method.
 func (f *File) Play(animation string) error {
 	if f.CurrentAnimation == nil {
-		f.playAnimation(f.GetAnimation(animation))
+		f.playAnimation(f.Animation(animation))
 	}
 
-	anim := f.GetAnimation(animation)
+	anim := f.Animation(animation)
 	if anim == nil {
 		return errorAnimationNotFound.withParams(animation)
 	}
@@ -45,23 +45,23 @@ func (f *File) Play(animation string) error {
 	return nil
 }
 
-// GetFrameBoundaries will return the current frame's bounding box.
-func (f *File) GetFrameBoundaries() Boundary {
+// FrameBoundaries will return the current frame's bounding box.
+func (f *File) FrameBoundaries() Boundary {
 	if f.CurrentAnimation != nil {
-		return f.Frames.FrameAtIndex(f.CurrentFrame).FrameBoundaries
+		return f.FrameAtIndex(f.CurrentFrame).FrameBoundaries
 	}
 
 	return Boundary{}
 }
 
-// GetAnimation will search the slices in the aseprite file
+// Animation will search the slices in the aseprite file
 // and return any animation that matches the name provided.
-// Note: GetAnimation is a duplicate of GetSlice is almost every way.
+// Note: Animation is a duplicate of GetSlice is almost every way.
 // This is because of the limitations of Golang that I cannot address.
 // There are no generics in the language yet that would allow me to
 // prevent this code duplication.
-func (f *File) GetAnimation(animation string) *Animation {
-	for _, anim := range f.Meta.Animations {
+func (f *File) Animation(animation string) *Animation {
+	for _, anim := range f.Animations {
 		if anim.Name == animation {
 			return &anim
 		}
@@ -70,14 +70,14 @@ func (f *File) GetAnimation(animation string) *Animation {
 	return nil
 }
 
-// GetSlice will search the slices in the aseprite file
+// Slice will search the slices in the aseprite file
 // and return any slice that matches the name provided.
-// Note: GetSlice is a duplicate of GetAnimation is almost every way.
+// Note: Slice is a duplicate of GetAnimation is almost every way.
 // This is because of the limitations of Golang that I cannot address.
 // There are no generics in the language yet that would allow me to
 // prevent this code duplication.
-func (f *File) GetSlice(slice string) *Slice {
-	for _, s := range f.Meta.Slices {
+func (f *File) Slice(slice string) *Slice {
+	for _, s := range f.Slices {
 		if s.Name == slice {
 			return &s
 		}
@@ -89,13 +89,13 @@ func (f *File) GetSlice(slice string) *Slice {
 // HasAnimation returns a boolean value that represents whether the provided
 // animation is contained in the aseprite file.
 func (f *File) HasAnimation(animation string) bool {
-	return f.GetAnimation(animation) != nil
+	return f.Animation(animation) != nil
 }
 
 // HasSlice returns a boolean value that represents whether the provided
 // slice is contained in the aseprite file.
 func (f *File) HasSlice(slice string) bool {
-	return f.GetSlice(slice) != nil
+	return f.Slice(slice) != nil
 }
 
 // Update is used for a Game Loop in such an OpenGL style workflow.
@@ -112,7 +112,7 @@ func (f *File) Update(dt float32) {
 
 		// If the frame counter is greater than the expected frame duration
 		// then increment or decrement the current frame being displayed.
-		if f.frameCounter > float32(f.Frames.FrameAtIndex(f.CurrentFrame).Duration) {
+		if f.frameCounter > float32(f.FrameAtIndex(f.CurrentFrame).Duration) {
 			f.advanceFrame()
 		}
 
