@@ -10,7 +10,7 @@ Aseprite JSON loader
 
 Why use this package?
 ---
-Well the mission of this repository was to improve performance and extensability of the [goaseprite](https://github.com/SolarLune/goaseprite) package.
+Well the mission of this repository was to improve performance and extensibility of the [goaseprite](https://github.com/SolarLune/goaseprite) package.
 
 So far this package allows for two different types of aseprite JSON files and more formats to come.
 
