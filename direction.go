@@ -36,7 +36,7 @@ func DirectionFromString(str string) Direction {
 	case PlayReverse.String():
 		return PlayReverse
 	case PlayPingPong.String():
-		return PlayReverse
+		return PlayPingPong
 	case PlayForward.String():
 		fallthrough
 	default:
