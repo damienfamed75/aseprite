@@ -44,6 +44,7 @@ func (i *AnimationInfo) playAnimation(anim *Animation) {
 	if i.CurrentAnimation.Direction == PlayReverse {
 		i.CurrentFrame = i.CurrentAnimation.To
 	}
+	i.frameCounter = 0
 }
 
 func (i *AnimationInfo) advanceFrame() {
