@@ -14,7 +14,7 @@ type AnimationInfo struct {
 	PrevFrame        int
 	PrevCurrentFrame int // what?
 	CurrentFrame     int
-	frameCounter     float32
+	FrameCounter     float32
 }
 
 func setupAnimationInfo() AnimationInfo {
@@ -44,11 +44,12 @@ func (i *AnimationInfo) playAnimation(anim *Animation) {
 	if i.CurrentAnimation.Direction == PlayReverse {
 		i.CurrentFrame = i.CurrentAnimation.To
 	}
+	i.FrameCounter = 0
 }
 
 func (i *AnimationInfo) advanceFrame() {
 	// Reset the frame counter.
-	i.frameCounter = 0
+	i.FrameCounter = 0
 
 	// Increment or decrement the current frame.
 	switch i.CurrentAnimation.Direction {

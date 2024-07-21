@@ -45,7 +45,7 @@ type Animation struct {
 	//  - PlayForward
 	//  - PlayReverse
 	//  - PlayPingPong
-	Direction Direction `json:"direction"`
+	Direction Direction `json:"direction,string"`
 }
 
 // Layer contains the data about the individual animation layer

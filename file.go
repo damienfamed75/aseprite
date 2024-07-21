@@ -124,11 +124,11 @@ func (f *File) Update(dt float32) {
 	if f.CurrentAnimation != nil {
 		// Increment the frame counter based on delta time.
 		// Note: Truncate multiplication.
-		f.frameCounter += dt * f.PlaySpeed
+		f.FrameCounter += dt * f.PlaySpeed
 
 		// If the frame counter is greater than the expected frame duration
 		// then increment or decrement the current frame being displayed.
-		if f.frameCounter > float32(f.Frames.FrameAtIndex(f.CurrentFrame).Duration) {
+		if f.FrameCounter > float32(f.Frames.FrameAtIndex(f.CurrentFrame).Duration) {
 			f.advanceFrame()
 		}
 
